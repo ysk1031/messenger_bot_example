@@ -4,6 +4,7 @@ GEM
     backports (3.6.8)
     domain_name (0.5.20160310)
       unf (>= 0.0.5, < 1.0.0)
+    dotenv (2.0.2)
     http-cookie (1.0.2)
       domain_name (~> 0.5)
     mime-types (2.99.1)
@@ -38,6 +39,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  dotenv
   rest-client
   sinatra
   sinatra-contrib
