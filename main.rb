@@ -2,9 +2,12 @@ require "sinatra"
 require "sinatra/reloader" if development?
 
 get "/" do
-  hello
+  "Hello, world!"
 end
 
-def hello
-  "Hello, world!!"
+get "/callback" do
+  if params["hub.verify_token"] != "aonounkounko"
+    return "Error, wrong validation token"
+  end
+  params["hub.challenge"]
 end
