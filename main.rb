@@ -25,7 +25,9 @@ post "/callback" do
     if !event["postback"].nil?
       case event["postback"]["payload"]
       when "today_weather"
+        fetch_weather(:today) {|weather| bot_response(sender, "今日の天気は、#{weather}") }
       when "tomorrow_weather"
+        fetch_weather(:tomorrow) {|weather| bot_response(sender, "明日の天気は、#{weather}") }
       end
     elsif !event["message"].nil? && !event["message"]["text"].nil?
       text = event["message"]["text"]
@@ -51,9 +53,7 @@ def bot_response(sender, text)
       text_message_request_body(sender, text)
     end
 
-  RestClient.post(request_endpoint, request_body, content_type: :json, accespt: :json) do |response, request, result, &block|
-    p response.body
-  end
+  RestClient.post request_endpoint, request_body, content_type: :json, accespt: :json
 end
 
 def text_message_request_body(sender, text)
@@ -175,4 +175,23 @@ def sample_shop_elements
       ]
     }
   ]
+end
+
+def fetch_weather(date_sym)
+  date = {
+    today: "今日",
+    tomorrow: "明日"
+  }
+
+  request_endpoint = "http://weather.livedoor.com/forecast/webservice/json/v1?city=130010"
+  RestClient.get request_endpoint do |response, request, result, &block|
+    json = JSON.parse response
+    weather = "分かりません"
+    json["forecasts"].each do |forecast|
+      if forecast["dateLabel"] == date[date_sym]
+        weather = forecast["telop"]
+      end
+    end
+    yield weather
+  end
 end
