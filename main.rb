@@ -25,9 +25,9 @@ post "/callback" do
     if !event["postback"].nil?
       case event["postback"]["payload"]
       when "today_weather"
-        fetch_weather(:today) {|weather| bot_response(sender, "今日の天気は、#{weather}") }
+        fetch_weather(:today) {|weather| bot_response(sender, "今日は、#{weather}") }
       when "tomorrow_weather"
-        fetch_weather(:tomorrow) {|weather| bot_response(sender, "明日の天気は、#{weather}") }
+        fetch_weather(:tomorrow) {|weather| bot_response(sender, "明日は、#{weather}") }
       end
     elsif !event["message"].nil? && !event["message"]["text"].nil?
       text = event["message"]["text"]
