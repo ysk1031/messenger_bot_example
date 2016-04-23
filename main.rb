@@ -2,8 +2,11 @@ require "sinatra"
 require "sinatra/reloader" if development?
 require "json"
 require 'rest-client'
+require 'bing-search'
 require "dotenv"
 Dotenv.load
+
+BingSearch.account_key = ENV["BING_SEARCH_ACCOUNT_KEY"]
 
 get "/" do
   "Hello, world!"
@@ -45,8 +48,13 @@ def bot_response(sender, text)
   request_body =
     if text =~ /天気/
       button_structured_message_request_body(sender, "いつの天気？", *weather_buttons)
-    elsif text =~ /画像/
-      image_url_message_request_body(sender, "")
+    elsif text =~ /(.+)\s+画像/
+      bing_image = BingSearch.image($&, limit: 10).shuffle[0]
+      if bing_image.nil?
+        text_message_request_body(sender, "残念、画像は見つかりませんでした")
+      else
+        image_url_message_request_body(sender, bing_image.media_url)
+      end
     elsif text =~ /ショップ/
       generic_structured_message_request_body(sender, *sample_shop_elements)
     else
@@ -76,7 +84,7 @@ def image_url_message_request_body(sender, url)
       attachment: {
         type: "image",
         payload: {
-          url: "https://pbs.twimg.com/profile_images/450801182135422976/-69lntRh.jpeg" # url
+          url: url
         }
       }
     }
