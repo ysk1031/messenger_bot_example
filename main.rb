@@ -61,7 +61,7 @@ def bot_response(sender, text)
       text_message_request_body(sender, text)
     end
 
-  RestClient.post request_endpoint, request_body, content_type: :json, accespt: :json
+  RestClient.post request_endpoint, request_body, content_type: :json, accept: :json
 end
 
 def text_message_request_body(sender, text)
